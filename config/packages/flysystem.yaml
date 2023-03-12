@@ -1,0 +1,19 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+flysystem:
+    storages:
+        default.storage:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/var/storage/default'
+
+        # This is my custom created storage for the users profile pictures.
+        # profile_pictures.storage:
+        #     adapter: 'gcloud'
+        #     options:
+        #         # Add the path to your GoogleCloudStorage Bucket Service
+        #         client: 'App\Services\Storage\GoogleCloudStorage'
+        #         # Enter your bucket name
+        #         bucket: 'bucket-name'
+        #         # The following property it is optional.
+        #         # Use it only if you want to have one bucket, and organize the files for that storage in a folder.
+        #         prefix: 'some-prefix'

@@ -1,8 +1,17 @@
 vich_uploader:
     db_driver: orm
+    # Add this option to let Vich use the FlySystem as a storage engine
+    storage: flysystem
 
-    #mappings:
-    #    products:
-    #        uri_prefix: /images/products
-    #        upload_destination: '%kernel.project_dir%/public/images/products'
-    #        namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+    mappings:
+        user_profile_picture:
+            # I used the URL of Bucket, including the prefix used in the flysystem.yaml file.
+            # This allowing me to resolve automatically the full URL of the image uploaded on the Google Cloud Storage
+            uri_prefix: https://storage.googleapis.com/bucket-name/some-prefix
+            
+            # I used the name of the flystem storage I created on the flysystem.yaml
+            upload_destination: profile_pictures.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true

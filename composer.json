@@ -13,6 +13,12 @@
         "doctrine/orm": "^2.14",
         "easycorp/easyadmin-bundle": "^4.6",
         "fakerphp/faker": "^1.21",
+        "google/apiclient": "^2.13",
+        "google/cloud-storage": "^1.30",
+        "knplabs/gaufrette": "^0.11.1",
+        "knplabs/knp-gaufrette-bundle": "^0.8.0",
+        "league/flysystem-bundle": "^3.1",
+        "league/flysystem-google-cloud-storage": "^3.12",
         "lexik/jwt-authentication-bundle": "^2.18",
         "nelmio/cors-bundle": "^2.3",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -22,6 +28,7 @@
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.2.*",
+        "symfony/mime": "6.2.*",
         "symfony/property-access": "6.2.*",
         "symfony/property-info": "6.2.*",
         "symfony/requirements-checker": "^2.0",
@@ -81,7 +88,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": true,
             "require": "6.2.*"
         }
     }

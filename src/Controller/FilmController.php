@@ -53,7 +53,7 @@ class FilmController extends AbstractController
         // Evite de mettre en cache une page vide. 
         if($page === $pageMaxNum){
             return new JsonResponse(
-                null, Response::HTTP_NO_CONTENT, [], true
+                null, Response::HTTP_NO_CONTENT, [], JSON_PRETTY_PRINT
             );
         }
 
@@ -73,6 +73,15 @@ class FilmController extends AbstractController
         );
      
         
+    }
+
+    #[Route('api/films/count', name: 'all_film', methods: ['GET'])]
+    public function countFilms(FilmRepository $filmRepository) : JsonResponse
+    {
+        $filmListLength = $this->filmRepository->countAllFilms();
+        $pageMaxNum = (int)round($filmListLength[1] / 5);
+
+        return new JsonResponse($pageMaxNum, Response::HTTP_OK, [], true);
     }
 
     // Read One film 
