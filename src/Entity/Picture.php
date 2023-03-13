@@ -17,23 +17,13 @@ class Picture
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $uniqueName = null;
-
-    #[ORM\Column]
-    private ?bool $isActive = null;
+    private ?string $fileName = null;
 
     #[ORM\Column]
     private ?bool $morning = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $UpdatedAt = null;
-
-    #[ORM\ManyToOne(inversedBy: 'relation')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Session $SessionId = null;
+    #[ORM\ManyToOne(inversedBy: 'pictures')]
+    private ?Session $session = null;
 
     public function getId(): ?int
     {
@@ -52,26 +42,14 @@ class Picture
         return $this;
     }
 
-    public function getUniqueName(): ?string
+    public function getFileName(): ?string
     {
-        return $this->uniqueName;
+        return $this->fileName;
     }
 
-    public function setUniqueName(string $uniqueName): self
+    public function setFileName(string $fileName): self
     {
-        $this->uniqueName = $uniqueName;
-
-        return $this;
-    }
-
-    public function isIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
+        $this->fileName = $fileName;
 
         return $this;
     }
@@ -88,38 +66,14 @@ class Picture
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getSession(): ?Session
     {
-        return $this->createdAt;
+        return $this->session;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setSession(?Session $session): self
     {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->UpdatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $UpdatedAt): self
-    {
-        $this->UpdatedAt = $UpdatedAt;
-
-        return $this;
-    }
-
-    public function getSessionId(): ?Session
-    {
-        return $this->SessionId;
-    }
-
-    public function setSessionId(?Session $SessionId): self
-    {
-        $this->SessionId = $SessionId;
+        $this->session = $session;
 
         return $this;
     }

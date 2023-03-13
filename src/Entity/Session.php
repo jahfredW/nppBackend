@@ -19,20 +19,14 @@ class Session
     private ?string $name = null;
 
     #[ORM\Column]
-    private ?bool $isActive = null;
-
-    #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
-
-    #[ORM\OneToMany(mappedBy: 'SessionId', targetEntity: picture::class, orphanRemoval: true)]
-    private Collection $relation;
+    #[ORM\OneToMany(mappedBy: 'session', targetEntity: Picture::class)]
+    private Collection $pictures;
 
     public function __construct()
     {
-        $this->relation = new ArrayCollection();
+        $this->pictures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,18 +46,6 @@ class Session
         return $this;
     }
 
-    public function isIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -76,42 +58,30 @@ class Session
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
     /**
-     * @return Collection<int, picture>
+     * @return Collection<int, Picture>
      */
-    public function getRelation(): Collection
+    public function getPictures(): Collection
     {
-        return $this->relation;
+        return $this->pictures;
     }
 
-    public function addRelation(picture $relation): self
+    public function addPicture(Picture $picture): self
     {
-        if (!$this->relation->contains($relation)) {
-            $this->relation->add($relation);
-            $relation->setSessionId($this);
+        if (!$this->pictures->contains($picture)) {
+            $this->pictures->add($picture);
+            $picture->setSession($this);
         }
 
         return $this;
     }
 
-    public function removeRelation(picture $relation): self
+    public function removePicture(Picture $picture): self
     {
-        if ($this->relation->removeElement($relation)) {
+        if ($this->pictures->removeElement($picture)) {
             // set the owning side to null (unless already changed)
-            if ($relation->getSessionId() === $this) {
-                $relation->setSessionId(null);
+            if ($picture->getSession() === $this) {
+                $picture->setSession(null);
             }
         }
 

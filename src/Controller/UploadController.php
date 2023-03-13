@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Session;
+use App\Entity\Picture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -48,7 +51,9 @@ class UploadController extends AbstractController
 
                 return new JsonResponse('echec, un fichier n\'est pas valide en taille ou en extension', Response::HTTP_UNAUTHORIZED);
             } 
-
+            // Instanciation de nouveaux objets Picture et session 
+            $Session = new Session();
+            $picture = new Picture();
             $filename = md5(uniqid()) . '.' . $file->guessExtension();
             $file->move($directory, $filename);
         }
