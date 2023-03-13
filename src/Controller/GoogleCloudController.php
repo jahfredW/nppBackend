@@ -19,58 +19,44 @@ class GoogleCloudController extends AbstractController
 {
 
     #[Route('/api/cloudgoogle', name: 'cloud', methods: ['POST'])]
-    public function upload(Request $request, GoogleCloudStorage $storage)
+    public function upload(Request $request)
     {
         
         // récupère les fichiers à uploader
         $files = $request->files->get('files');
-        $successUpload = [];
-        $failureUpload = [];
-        
+       
 
         $extensions = ['jpg', 'png', 'gif', 'png'];
+        $bucketName = 'fredgruwedev';
 
-        $bucket = $storage->bucket('fredgruwedev');
+        $storage = GoogleCloudStorage::getInstance($bucketName);
+
+        $bucket = $storage->getClient();
 
         if (empty($files)) {
             throw new \Exception('No file was uploaded.');
         }
 
-        // $filenames = [];
+     
         // boucle sur les fichiers et stocke chaque fichier dans Gaufrette
         foreach ($files as $file) {
-            // crée un nom de fichier unique
+            
             if(!in_array($file->guessExtension(), $extensions) || $file->getSize() > 100000000 ){
                 $failureUpload[] = $file;
 
                 return new JsonResponse('echec, un fichier n\'est pas valide en taille ou en extension');
             } 
 
-            
-            // stocke le fichier
-            // $object = $bucket->upload($file , ['name' => 'test']);
-            
-            // ajoute le nom de fichier à la liste des noms de fichiers
-            // $filenames[] = $filename;
-            //  else {
+                // crée un nom de fichier unique
                 $filename = md5(uniqid()) . '.' . $file->guessExtension();
+                // upload en mode privé 
                 $object = $bucket->upload(fopen($file, 'r'), [
                     'predefinedAcl' => 'private',
                     'name' => $filename
                 ]);
-                // $successUpload[] = [$file, $filename];
-            // } ;
             
         }
        
-        // foreach($successUpload as $file){
-        //     $object = $bucket->upload(fopen($file[0], 'r'), [
-        //         'predefinedAcl' => 'publicRead',
-        //         'name' => $file[1]
-        //     ]);
-        // }
-        
-
         // renvoie une réponse de succès avec les noms de fichiers et les URL signées pour accéder aux fichiers
         // $urls = [];
         // foreach ($filenames as $filename) {

@@ -21,16 +21,33 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class DownloadController extends AbstractController {
 
     #[Route('/api/downloadFile', name: 'download', methods: ['GET'])]
-    public function upload(Request $request, GoogleCloudStorage $storage)
+    public function upload(Request $request)
     {
-    
 
-    // Get the bucket name and object name
     $bucketName = 'fredgruwedev';
     $objectName = '2681499bf68c388ca6ea2355b03f85ea.jpg';
+    
+    $storage = GoogleCloudStorage::getInstance($bucketName);
+    $storage->setObjectName($objectName);
+   
+    
+    // $object = GoogleCloudStorage::bucket($bucketName)->object($objectName);
 
-    $object = $storage->bucket($bucketName)->object($objectName);
-    $stream = $object->downloadAsStream();
+    $object = $stream = $storage->getObject();
+
+    // $validityDuration = 300; // 5 minutes
+
+    // $url = $object->signedUrl(new \DateTime('+'.$validityDuration.' seconds'));
+
+    // $context = stream_context_create([
+    //     'gs' => [
+    //         'key' => file_get_contents($url),
+    //     ],
+    // ]);
+
+    $stream = $storage->getObject()->downloadAsStream();
+
+    // $stream = fopen('gs://my-bucket/path/to/my/object', 'r', false, $context);
    
    
     $response = new StreamedResponse();
@@ -39,53 +56,42 @@ class DownloadController extends AbstractController {
         fpassthru($stream->detach());
     });
 
-    // $response->headers->set('Content-Type', 'image/jpeg');
-    // $response->headers->set('Content-Disposition', 'attachment; filename="2681499bf68c388ca6ea2355b03f85ea.jpg"');
+    $response->headers->set('Content-Type', 'image/jpeg');
+    $response->headers->set('Content-Disposition', 'attachment; filename="2681499bf68c388ca6ea2355b03f85ea.jpg"');
    
     
 
-
     return $response;
 
-
-
-
-    // Create a signed URL with a short expiration time (5 minutes)
-    // $content = $storage->bucket($bucketName)->object($objectName)
-    //     ->signedUrl(new \DateTime('+5 minutes'), [
-    //         'version' => 'v4',
-    //         'private' => true,
-    //     ]);
-
-    //     return new Response($content);
     }
 
-    // #[Route('/api/downloadFile', name: 'download', methods: ['GET'])]
-    // public function uploaded(Request $request, GoogleCloudStorage $storage)
-    // {
+    #[Route('/api/downloadLink', name: 'downloadLink', methods: ['GET'])]
+    public function uploaded(Request $request)
+    {
     
-
+    
     // Get the bucket name and object name
-    // $bucketName = 'fredgruwedev';
-    // $objectName = '2681499bf68c388ca6ea2355b03f85ea.jpg';
+    $bucketName = 'fredgruwedev';
+    $objectName = '2681499bf68c388ca6ea2355b03f85ea.jpg';
 
-    // // Create a signed URL with a short expiration time (5 minutes)
-    // $storageObject = $storage->bucket($bucketName)->object($objectName);
-    // $content = $storageObject->downloadAsStream();
+    $storage = GoogleCloudStorage::getInstance($bucketName);
+    $storage->setObjectName($objectName);
+
+    // Create a signed URL with a short expiration time (5 minutes)
+    // Create a signed URL with a short expiration time (5 minutes)
+    $content = $storage->getObject()
+         ->signedUrl(new \DateTime('+5 minutes'), [
+             'version' => 'v4',
+             'private' => true,
+         ]);
+
+
+         return new Response($content);
 
     
 
 
-
-        
-
-    //     $response = new StreamedResponse(function () use ($content) {
-    //         $content;
-    //     });
-    //     // $response->headers->set('Content-Type', 'image/jpeg');
-    //     // $response->headers->set('Content-Disposition', 'attachment; filename="test"');
-    //     return $response;
-    // }
+    }
 
    
 }
