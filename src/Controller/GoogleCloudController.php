@@ -1,19 +1,18 @@
 <?php
 
 
-
 namespace App\Controller;
 
 
+use DateTime;
+use DateTimeImmutable;
 use App\Entity\Picture;
 use App\Entity\Session;
 use Google\Cloud\Storage\StorageClient;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\Storage\GoogleCloudStorage;
-use Knp\Bundle\GaufretteBundle\FilesystemMap;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Factory\GoogleCloudStorageServiceFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -22,6 +21,7 @@ class GoogleCloudController extends AbstractController
 {
     private $em;
     const BUCKET_NAME = 'fredgruwedev';
+    const MAX_FILE_SIZE = 10000000;
 
     public function __construct(EntityManagerInterface $em){
         $this->em = $em;
@@ -33,15 +33,31 @@ class GoogleCloudController extends AbstractController
         // récupère les fichiers à uploader
         $files = $request->files->get('files');
         // récupère le nom de la session 
-        $sessionName = $request->get('session');
+        $sessionName = $request->get('session_name');
         // récupère l'entité session correspondante 
         $session = $this->em->getRepository(Session::class)->findOneByName($sessionName);
+
+        
         
         // Détermine si c'est une session du matin ou non 
-        $matin = $request->get('matin');
+        $moment = $request->get('session_moment');
+
+        $matin = true ? $moment === "matin" : false;
+
+        $date = $request->get('session_date');
+        $dateImmutable = DateTimeImmutable::createFromFormat('d/m/Y', $date);
+
+        if(!$session){
+            $session = new Session();
+            $session->setName($sessionName);
+            $session->setCreatedAt($dateImmutable);
+        }
+
+        $this->em->persist($session);
+
       
         // Initialisation du tableau d'extensions
-        $extensions = ['jpg', 'png', 'gif', 'png'];
+        $extensions = ['jpg', 'png'];
 
         // initialisation du nom de bucket 
         $bucketName = GoogleCloudController::BUCKET_NAME;
@@ -60,7 +76,7 @@ class GoogleCloudController extends AbstractController
         // boucle sur les fichiers et stocke chaque fichier dans Gaufrette
         foreach ($files as $file) {
             
-            if(!in_array($file->guessExtension(), $extensions) || $file->getSize() > 100000000 ){
+            if(!in_array($file->guessExtension(), $extensions) || $file->getSize() > GoogleCloudController::MAX_FILE_SIZE ){
                 $failureUpload[] = $file;
 
                 return new JsonResponse('echec, un fichier n\'est pas valide en taille ou en extension');
@@ -79,7 +95,7 @@ class GoogleCloudController extends AbstractController
                 $picture->setFileName($filename);
              
                 $picture->setMorning($matin);
-                // $picture->setCreatedAt(new \DateTimeImmutable());
+                $picture->setCreatedAt($dateImmutable);
                 $picture->setSession($session);
 
                 // upload en mode privé 
