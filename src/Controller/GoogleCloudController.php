@@ -20,8 +20,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class GoogleCloudController extends AbstractController
 {
     private $em;
-    const BUCKET_NAME = 'fredgruwedev';
-    const MAX_FILE_SIZE = 10000000;
+    const BUCKET_NAME = 'npp_photos';
+    const MAX_FILE_SIZE = 15000000;
 
     public function __construct(EntityManagerInterface $em){
         $this->em = $em;
@@ -37,8 +37,6 @@ class GoogleCloudController extends AbstractController
         // récupère l'entité session correspondante 
         $session = $this->em->getRepository(Session::class)->findOneByName($sessionName);
 
-        
-        
         // Détermine si c'est une session du matin ou non 
         $moment = $request->get('session_moment');
 
@@ -51,9 +49,11 @@ class GoogleCloudController extends AbstractController
             $session = new Session();
             $session->setName($sessionName);
             $session->setCreatedAt($dateImmutable);
+
+            $this->em->persist($session);
         }
 
-        $this->em->persist($session);
+        
 
       
         // Initialisation du tableau d'extensions
